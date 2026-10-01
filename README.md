@@ -3,6 +3,8 @@
 Star Wars temalı, sade bir pomodoro zamanlayıcı. Süre ilerledikçe Jedi'ın ışın kılıcı uzar:
 odaklanırken mavi, molada yeşil yanar. Süre dolunca alarm çalar.
 
+**Canlı:** https://erentaskale.github.io/jedi-focus-timer/
+
 ## Kullanım
 
 - **START / PAUSE**: başlat, duraklat (`Space`)
