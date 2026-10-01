@@ -1,0 +1,107 @@
+/* Ekranın sağ üst köşesi; telefonda panelle çakışmasın diye sağ alt.
+   Ölçüler --u ile: panel gibi sahneyle birlikte ölçeklenir. */
+.toolbar {
+  position: fixed;
+  top: max(calc(16 * var(--u)), env(safe-area-inset-top));
+  right: max(calc(16 * var(--u)), env(safe-area-inset-right));
+  z-index: 40;
+  display: flex;
+  gap: calc(8 * var(--u));
+}
+
+.tool-btn {
+  display: grid;
+  place-items: center;
+  width: calc(36 * var(--u));
+  height: calc(36 * var(--u));
+  border-radius: calc(8 * var(--u));
+  border: 1px solid rgba(0, 150, 255, 0.25);
+  background: rgba(2, 10, 24, 0.35);
+  backdrop-filter: blur(calc(4 * var(--u)));
+  -webkit-backdrop-filter: blur(calc(4 * var(--u)));
+  color: #7a9bb8;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tool-btn:hover {
+  color: #cceeff;
+  border-color: rgba(0, 150, 255, 0.6);
+}
+
+.tool-btn.on {
+  color: #cceeff;
+  border-color: rgba(0, 150, 255, 0.6);
+  box-shadow: 0 0 calc(10 * var(--u)) rgba(0, 150, 255, 0.35);
+}
+
+.tool-btn:focus-visible {
+  outline: 1px solid #cceeff;
+  outline-offset: calc(2 * var(--u));
+}
+
+.shortcut-help {
+  position: absolute;
+  top: calc(100% + calc(8 * var(--u)));
+  right: 0;
+  min-width: calc(260 * var(--u));
+  padding: calc(12 * var(--u)) calc(14 * var(--u));
+  border-radius: calc(10 * var(--u));
+  border: 1px solid rgba(0, 150, 255, 0.35);
+  background: rgba(2, 10, 24, 0.85);
+  backdrop-filter: blur(calc(8 * var(--u)));
+  -webkit-backdrop-filter: blur(calc(8 * var(--u)));
+  box-shadow: 0 0 calc(20 * var(--u)) rgba(0, 150, 255, 0.2);
+  display: grid;
+  gap: calc(8 * var(--u));
+}
+
+.shortcut-row {
+  display: flex;
+  justify-content: space-between;
+  gap: calc(16 * var(--u));
+  font-family: 'Orbitron', sans-serif;
+  font-size: calc(11 * var(--u));
+  letter-spacing: 1px;
+  color: #7a9bb8;
+}
+
+.shortcut-row kbd {
+  font-family: 'Audiowide', sans-serif;
+  color: #cceeff;
+  white-space: nowrap;
+}
+
+/* Ses kapalı uyarısı: dikkat çeksin diye yavaşça yanıp söner */
+.tool-btn.audio-hint {
+  color: #ffdd99;
+  border-color: rgba(255, 180, 0, 0.6);
+  animation: hintPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes hintPulse {
+  50% { box-shadow: 0 0 calc(12 * var(--u)) rgba(255, 180, 0, 0.5); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tool-btn.audio-hint {
+    animation: none;
+  }
+}
+
+@media (max-aspect-ratio: 1/1) {
+  .toolbar {
+    top: auto;
+    bottom: max(calc(16 * var(--u)), env(safe-area-inset-bottom));
+  }
+
+  .shortcut-help {
+    top: auto;
+    bottom: calc(100% + calc(8 * var(--u)));
+  }
+}
+
+.tool-icon {
+  width: calc(18 * var(--u));
+  height: calc(18 * var(--u));
+}

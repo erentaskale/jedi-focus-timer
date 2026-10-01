@@ -1,0 +1,159 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/*
+  --u: sahnenin ölçek birimi. Masaüstünde 720px yükseklikte 1px'e eşit; resim büyüyüp
+  küçüldükçe o da aynı oranda değişir. Panel ve kılıç ölçüleri bu birimle yazılır.
+  Dikey ekranda (telefon) sabit 1px; orada ayrı, kompakt bir yerleşim var.
+*/
+:root {
+  --u: 1px;
+}
+
+@media (min-aspect-ratio: 1/1) {
+  :root {
+    /* Çok geniş ekranda (21:9 vb.) panel ekrana sığsın diye yükseklikle sınırlanır */
+    --u: min(max(100dvh, 100vw / 2.4) / 720, 100dvh / 600);
+  }
+}
+
+body {
+  background-color: #03050a;
+  height: 100vh;
+  height: 100dvh; /* Mobilde adres çubuğu açılıp kapanınca zıplamaz */
+  overflow: hidden;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+.scene-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/*
+  Resim ekranı tamamen kaplar (cover), kenarlardan kırpılır; siyah bant kalmaz.
+  Kutu her zaman resmin oranında (1942x809) olduğu için kılıcın yüzdeleri
+  ekran boyutu ne olursa olsun resimdeki kabzaya denk gelir.
+  --focus-x / --focus-y: kırpılırken ekranda tutulacak nokta (resme göre oran).
+*/
+.scene-wrapper {
+  --ratio: 2.4;
+  --focus-x: 0.5;
+  --focus-y: 0.5;
+  --w: max(100vw, 100dvh * var(--ratio));
+  --h: calc(var(--w) / var(--ratio));
+
+  position: absolute;
+  width: var(--w);
+  height: var(--h);
+  left: clamp(100vw - var(--w), 50vw - var(--w) * var(--focus-x), 0px);
+  top: clamp(100dvh - var(--h), 50dvh - var(--h) * var(--focus-y), 0px);
+}
+
+.scene-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Lightsaber Progress Bar */
+.lightsaber-container {
+  position: absolute;
+  /* Resimdeki kılıç kabzasının konumu (resme göre yüzde). */
+  left: 35.5%;
+  top: 64.5%;
+  
+  height: calc(11 * var(--u));
+  width: 27%; /* Kılıcın en fazla uzayacağı mesafe */
+  
+  transform: translateY(-50%);
+  transform-origin: left center;
+  pointer-events: none;
+  z-index: 30; /* Panelin (z-index: 20) üstünden geçer */
+}
+
+.lightsaber-blade {
+  height: 100%;
+  width: 0%; /* Süre azaldıkça %100'e uzar (App.jsx) */
+  background: #fff;
+  border-radius: 0 10px 10px 0; /* Ucu yuvarlak */
+  transition: width 1s linear;
+  transform-origin: left center;
+  
+  /* Işın kılıcı merkezi beyaz, etrafı renkli glow */
+  box-shadow: 
+    0 0 5px #fff,
+    0 0 10px #fff;
+}
+
+/* Focus Modu (Mavi Kılıç) */
+.lightsaber-blade.focus {
+  box-shadow: 
+    0 0 5px #fff,
+    0 0 10px #fff,
+    0 0 20px #0096ff,
+    0 0 40px #0096ff,
+    0 0 60px #0096ff;
+}
+
+/* Break Modu (Yeşil Kılıç - Luke Skywalker stili) */
+.lightsaber-blade.break {
+  box-shadow: 
+    0 0 5px #fff,
+    0 0 10px #fff,
+    0 0 20px #00c864,
+    0 0 40px #00c864,
+    0 0 60px #00c864;
+}
+
+/* Çalışırken hafif titreşim (ışın kılıcı uğultusu) */
+@keyframes bladeHum {
+  0% { opacity: 1; transform: scaleY(1); }
+  50% { opacity: 0.9; transform: scaleY(0.95); }
+  100% { opacity: 1; transform: scaleY(1); }
+}
+
+.lightsaber-blade.active {
+  animation: bladeHum 0.1s infinite;
+}
+
+/* Süre bitince: kılıç bir an parlayıp kalınlaşır, sonra söner (App.jsx: FLASH_MS) */
+@keyframes bladeFlash {
+  0%   { filter: brightness(1); transform: scaleY(1); }
+  15%  { filter: brightness(2.2); transform: scaleY(1.6); }
+  35%  { filter: brightness(1.4); transform: scaleY(1.15); }
+  55%  { filter: brightness(2); transform: scaleY(1.45); }
+  100% { filter: brightness(1); transform: scaleY(1); }
+}
+
+.lightsaber-blade.flash {
+  animation: bladeFlash 1.2s ease-out;
+}
+
+/* Hareketi azaltmayı seçen kullanıcılar için titreşim ve parlama kapalı */
+@media (prefers-reduced-motion: reduce) {
+  .lightsaber-blade.active,
+  .lightsaber-blade.flash {
+    animation: none;
+  }
+}
+
+/* Dikey ekranlar (telefon): Jedi solda, kılıç panelin altında ve ekrandan taşmadan uzar */
+@media (max-aspect-ratio: 1/1) {
+  .scene-wrapper {
+    --focus-x: 0.365; /* Jedi ekranın solunda görünür kalır */
+  }
+
+  .lightsaber-container {
+    width: min(27%, 100vw - 24px - (50vw - var(--w) * (var(--focus-x) - 0.355)));
+  }
+}
